@@ -15,7 +15,7 @@ try {
 catch {
   $minorVersion = "8"
   $buildVersion = "1"
-  write_log "Auf dem System ist kein Java installiert. Setze default version $minorVersion $buildVersion" -Foregroundcolor Red
+  write_log "Java is not installed. Setting default version $minorVersion $buildVersion" -Foregroundcolor Red
 }
 
 #Download-Pfad für die Dateien
@@ -34,30 +34,30 @@ $strWebMinor = [int]$webversion.Groups[1].Value
 $strWebBuild = [int]$webversion.Groups[2].Value
 
 Function Get-Matches($Pattern,$groupNumber = 0) {begin { $regex = New-Object Regex($pattern) };process { foreach ($match in ($regex.Matches($_))) { ([Object[]]$match.Groups)[$groupNumber].Value }}}
-write_log "Installierte Java-Version: $minorVersion $buildVersion - Aktuellste Version: $strWebMinor $strWebBuild"
+write_log "Java version installed: $minorVersion $buildVersion - Most recent version: $strWebMinor $strWebBuild"
 
 if ($minorVersion -lt $strWebMinor -or $buildVersion -lt $strWebBuild){
-    write_log "Es ist ein Java-Update verfügbar" -ForegroundColor Green -NoNewline
+    write_log "An update is available" -ForegroundColor Green -NoNewline
     # Downloadlinks aus dem Quelltext extrahieren
     $link64bit = $content | Get-Matches '<a title="Download der Java-Software für Windows \(64-Bit\)" href="([^>\"]+)">' 1 | select -First 1
     if ($link64bit -ne ""){
-	    write_log "Beginne Download des Updates. Bitte warten ... " -ForegroundColor Green -NoNewline
+        write_log "Starting download. Please wait ... " -ForegroundColor Green -NoNewline
         # Download Update
         $net.DownloadFile($link64bit,$targetPathJava64)
-	    write_log "Download abgeschlossen" -ForegroundColor Green
-        write_log "Installiere Update ..." -ForeGroundColor Yellow
+        write_log "Download complete." -ForegroundColor Green
+        write_log "Installing Update ..." -ForeGroundColor Yellow
         # Installiere Update silent
         Start-Process -FilePath $targetPathJava64 -ArgumentList "/s REBOOT=Suppress" -wait
         if ($LASTEXITCODE -eq 0){
-	        write_log "Java $strWebMinor Update $strWebBuild wurde erfolgreich installiert"
+          write_log "Java $strWebMinor Update $strWebBuild installed successfully!"
         }else{
-	        write_log "Bei der Installation ist ein Fehler aufgetreten. Fehlercode: $LASTEXITCODE"
+          write_log "An error occured during installation. Error code: $LASTEXITCODE"
         }
     }else{
-        write_log "Download-Link konnte nicht extrahiert werden!" -ForegroundColor Red
+        write_log "Could not extract download link!" -ForegroundColor Red
     }
 }else{
-    write_log "Kein Update verfügbar. Script beendet." -ForegroundColor Green -NoNewline
+    write_log "No update available." -ForegroundColor Green -NoNewline
 }
 # SIG # Begin signature block
 # MIIFXQYJKoZIhvcNAQcCoIIFTjCCBUoCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
