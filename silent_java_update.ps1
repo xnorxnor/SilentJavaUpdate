@@ -3,14 +3,6 @@ $LogFile = "update.log"
 
 write_log "Checking for Java updates"
 
-# check ob 32Bit oder 64Bit
-$osVersion = (gwmi Win32_OperatingSystem).OSArchitecture
-if ($osVersion -like "64-Bit"){
-    $regKey = "HKLM:\SOFTWARE\Wow6432Node\JavaSoft\Java Runtime Environment"
-}else{
-    $regKey = "HKLM:\SOFTWARE\JavaSoft\Java Runtime Environment"
-}
-
 try {
   $javaVersionOutput = & java.exe -version 2>&1
   # java version "1.8.0_171"
@@ -25,22 +17,7 @@ catch {
   $buildVersion = "1"
   write_log "Auf dem System ist kein Java installiert. Setze default version $minorVersion $buildVersion" -Foregroundcolor Red
 }
-  
-#$strVersion = (Get-ItemProperty $regKey -name "CurrentVersion" -ErrorAction SilentlyContinue).CurrentVersion
-#if (!$strVersion)
-#{
-    #exit
-#} 
-#else
-#{
-#  $allOutput = & java.exe -version 2>&1
-#  # java version "1.8.0_171"
-#  $firstLine = $allOutput[0].ToString()
-#  # 8
-#  $minorVersion = [int]$firstLine.Split(".")[1]
-#  # 171
-#  $buildVersion = [int]$firstLine.Split("_")[1].trim('"')
-#}
+
 #Download-Pfad für die Dateien
 $targetPathJava64 = $env:TEMP + "\java64bit.exe"
 
